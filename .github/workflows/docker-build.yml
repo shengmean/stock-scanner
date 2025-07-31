@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - '2.6 webapp（流式传输测试版）/**.dockerfile'
+      - '2.6 webapp（流式传输测试版）/dockerfile'
 
 jobs:
   build-and-push:
