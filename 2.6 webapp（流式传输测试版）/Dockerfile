@@ -22,13 +22,13 @@ RUN apt-get update && apt-get install -y \
     && echo $TZ > /etc/timezone
 
 # 复制requirements文件
-COPY requirements.txt .
+COPY 2.6 webapp（流式传输测试版）/requirements.txt .
 
 # 安装Python依赖
 RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
 
 # 复制应用代码
-COPY . .
+COPY 2.6 webapp（流式传输测试版）/. .
 
 # 创建日志目录
 RUN mkdir -p /app/logs
