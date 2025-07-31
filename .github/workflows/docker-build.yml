@@ -1,51 +1,33 @@
 name: 构建2.6webapp镜像
-
 on:
-  workflow_dispatch:  # 仅手动触发
-
-env:
-  BUILDX_NO_DEFAULT_ATTESTATIONS: 1  # 关键修复
+  #防止fork乱用action设置只能手动触发构建
+  workflow_dispatch:
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      id-token: write
-
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@master
 
-      - name: 设置QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64,amd64
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
-      - name: 设置Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-          install: true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-      - name: 登录Docker Hub
-        uses: docker/login-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}  # 使用TOKEN而不是密码
+          password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: 构建并推送镜像
-        uses: docker/build-push-action@v5
+      - name: 构建并推送到Dockerhub镜像仓库
+        uses: docker/build-push-action@v2
         with:
-          context: "2.6 webapp（流式传输测试版）"
-          file: "2.6 webapp（流式传输测试版）/Dockerfile"
+          context: .
+          file: "./2.6 webapp（流式传输测试版）/Dockerfile"
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/stock-webapp:latest
-            ${{ secrets.DOCKER_USERNAME }}/stock-webapp:2.6-beta
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          attest: false
-          provenance: false
-          sbom: false
